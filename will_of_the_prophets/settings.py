@@ -9,12 +9,14 @@ import django_heroku
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
+from .utils import get_boolean_env_variable
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # noqa: PTH100, PTH120
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "placeholder")
 
-DEBUG = bool(os.environ.get("DEBUG", False))
+DEBUG = get_boolean_env_variable("DEBUG", False)
 
 ALLOWED_HOSTS = ["*.herokuapp.com", "localhost"]
 
@@ -49,7 +51,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-if bool(os.environ.get("DISABLE_DEBUG_TOOLBAR", False)):
+if get_boolean_env_variable("DISABLE_DEBUG_TOOLBAR", False):
     INSTALLED_APPS.remove("debug_toolbar")
     MIDDLEWARE.remove("debug_toolbar.middleware.DebugToolbarMiddleware")
 
@@ -138,7 +140,7 @@ IGNORABLE_404_URLS = [re.compile(r"^/phpmyadmin/"), re.compile(r"\.php$")]
 # Security
 # https://docs.djangoproject.com/en/stable/topics/security/
 
-SECURE_SSL_REDIRECT = bool(os.environ.get("SECURE_SSL_REDIRECT", not DEBUG))
+SECURE_SSL_REDIRECT = get_boolean_env_variable("SECURE_SSL_REDIRECT", not DEBUG)
 SECURE_HSTS_SECONDS = int(
     os.environ.get(
         "SECURE_HSTS_SECONDS",
@@ -210,7 +212,7 @@ CSP_STYLE_SRC = ["'self'", "cdnjs.cloudflare.com"]
 CSP_IMG_SRC = ["'self'", "s3.amazonaws.com", "s3.us-east-1.amazonaws.com"]
 CSP_SCRIPT_SRC = ["'self'", "browser.sentry-cdn.com", "cdnjs.cloudflare.com"]
 CSP_CONNECT_SRC = ["'self'", "s3.us-east-1.amazonaws.com"]
-CSP_REPORT_ONLY = bool(os.environ.get("CSP_REPORT_ONLY", DEBUG))
+CSP_REPORT_ONLY = get_boolean_env_variable("CSP_REPORT_ONLY", DEBUG)
 CSP_REPORT_URI = os.environ.get("CSP_REPORT_URI", None)
 CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
 
